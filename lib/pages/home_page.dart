@@ -5,6 +5,10 @@ import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/sales_box_model.dart';
 import 'package:flutter_trip/model/common_model.dart';
+import 'package:flutter_trip/widget/local_nav.dart';
+
+
+const APPBAR_SCROLL_OFFSET = 100;
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,16 +21,17 @@ class _HomePageState extends State<HomePage> {
   List<CommonModel> subNavList = [];
   GridNavModel _gridNavModel;
   SalesBoxModel _salesBoxModel;
+  double _appBarAlpha = 0;
 
   bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _handlerRefresh();
+    _handleRefresh();
   }
 
-  Future<Null> _handlerRefresh() async {
+  Future<Null> _handleRefresh() async {
     try {
       HomeModel homeModel = await HomeDao.fetch();
       setState(() {
@@ -46,22 +51,39 @@ class _HomePageState extends State<HomePage> {
     return null;
   }
 
+  bool _handleScroll(ScrollNotification notification){
+    //a notification  from its root child when scroll update
+    if(notification is ScrollUpdateNotification && notification.depth == 0){
+      setState(() {
+        _appBarAlpha = (notification.metrics.pixels / APPBAR_SCROLL_OFFSET).clamp(0.0, 1.0);
+      });
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: MediaQuery.removePadding(
-      removeTop: true,
-      context: context,
-      child: ListView(
-        children: <Widget>[_banner],
-      ),
-    ));
+      backgroundColor: Color(0xfff2f2f2),
+        body: Stack(children: <Widget>[
+      MediaQuery.removePadding(
+          removeTop: true,
+          context: context,
+          child: NotificationListener(
+            onNotification: _handleScroll,
+              child: ListView(
+            children: <Widget>[_banner,
+            LocalNav(localNavList: localNavList),
+            Container(height: 2000,)],
+          ))),
+      _appBar
+    ]));
   }
 
   Widget get _banner {
     return Container(
       height: 160,
-      child: Swiper(
+      child: bannerList.isNotEmpty ? Swiper(
         itemCount: 3,
         autoplay: true,
         pagination: SwiperPagination(),
@@ -75,6 +97,18 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
+      )
+          :Container(color: Colors.white,)
+      ,
+    );
+  }
+
+  Widget get _appBar {
+    return FractionallySizedBox(
+      widthFactor: 1,
+      child: Container(
+        decoration: BoxDecoration(color: Colors.white.withOpacity(_appBarAlpha)),
+        height: 80.0,
       ),
     );
   }
