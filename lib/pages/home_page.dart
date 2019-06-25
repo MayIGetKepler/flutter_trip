@@ -6,7 +6,7 @@ import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/sales_box_model.dart';
 import 'package:flutter_trip/model/common_model.dart';
 import 'package:flutter_trip/widget/local_nav.dart';
-
+import 'package:flutter_trip/widget/grid_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -51,11 +51,12 @@ class _HomePageState extends State<HomePage> {
     return null;
   }
 
-  bool _handleScroll(ScrollNotification notification){
+  bool _handleScroll(ScrollNotification notification) {
     //a notification  from its root child when scroll update
-    if(notification is ScrollUpdateNotification && notification.depth == 0){
+    if (notification is ScrollUpdateNotification && notification.depth == 0) {
       setState(() {
-        _appBarAlpha = (notification.metrics.pixels / APPBAR_SCROLL_OFFSET).clamp(0.0, 1.0);
+        _appBarAlpha = (notification.metrics.pixels / APPBAR_SCROLL_OFFSET)
+            .clamp(0.0, 1.0);
       });
     }
     return false;
@@ -64,42 +65,55 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff2f2f2),
+        backgroundColor: Color(0xfff2f2f2),
         body: Stack(children: <Widget>[
-      MediaQuery.removePadding(
-          removeTop: true,
-          context: context,
-          child: NotificationListener(
-            onNotification: _handleScroll,
-              child: ListView(
-            children: <Widget>[_banner,
-            LocalNav(localNavList: localNavList),
-            Container(height: 2000,)],
-          ))),
-      _appBar
-    ]));
+          MediaQuery.removePadding(
+              removeTop: true,
+              context: context,
+              child: NotificationListener(
+                  onNotification: _handleScroll,
+                  child: ListView(
+                    children: <Widget>[
+                      _banner,
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+                        child: LocalNav(localNavList: localNavList),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: GridNav(_gridNavModel),
+                      ),
+                      Container(
+                        height: 2000,
+                      )
+                    ],
+                  ))),
+          _appBar
+        ]));
   }
 
   Widget get _banner {
     return Container(
       height: 160,
-      child: bannerList.isNotEmpty ? Swiper(
-        itemCount: 3,
-        autoplay: true,
-        pagination: SwiperPagination(),
-        itemBuilder: (context, index) {
-          var item = bannerList[index];
-          return GestureDetector(
-            onTap: () {},
-            child: Image.network(
-              item.icon,
-              fit: BoxFit.fill,
+      child: bannerList.isNotEmpty
+          ? Swiper(
+              itemCount: bannerList.length,
+              autoplay: true,
+              pagination: SwiperPagination(),
+              itemBuilder: (context, index) {
+                var item = bannerList[index];
+                return GestureDetector(
+                  onTap: () {},
+                  child: Image.network(
+                    item.icon,
+                    fit: BoxFit.fill,
+                  ),
+                );
+              },
+            )
+          : Container(
+              color: Colors.white,
             ),
-          );
-        },
-      )
-          :Container(color: Colors.white,)
-      ,
     );
   }
 
@@ -107,7 +121,8 @@ class _HomePageState extends State<HomePage> {
     return FractionallySizedBox(
       widthFactor: 1,
       child: Container(
-        decoration: BoxDecoration(color: Colors.white.withOpacity(_appBarAlpha)),
+        decoration:
+            BoxDecoration(color: Colors.white.withOpacity(_appBarAlpha)),
         height: 80.0,
       ),
     );

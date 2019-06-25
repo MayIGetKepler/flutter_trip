@@ -5,7 +5,7 @@ import 'dart:async';
 const CATCH_URLS = ['m.ctrip.com/', 'm.ctrip.com/html5/', 'm.ctrip.com/html5'];
 
 class WebView extends StatefulWidget {
-  String url;
+  final String url;
   final String statusBarColor;
   final String title;
   final bool hideAppBar;
@@ -15,7 +15,7 @@ class WebView extends StatefulWidget {
     this.statusBarColor,
     this.title,
     this.hideAppBar,
-    this.backForbid});
+    this.backForbid  = false});
 
   @override
   _WebViewState createState() => _WebViewState();
@@ -76,8 +76,7 @@ class _WebViewState extends State<WebView> {
     _onStateChanged.cancel();
     _onUrlChanged.cancel();
     _onHttpError.cancel();
-    _webviewPlugin
-      ..dispose();
+    _webviewPlugin.dispose();
     super.dispose();
   }
 
@@ -111,7 +110,7 @@ class _WebViewState extends State<WebView> {
     if(widget.hideAppBar ?? false){
      return Container(
         color: backgroundColor,
-        height: 30,
+        height: 0,
       );
     }
 
