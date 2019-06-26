@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'dart:async';
+import 'package:flutter/services.dart';
 
 const CATCH_URLS = ['m.ctrip.com/', 'm.ctrip.com/html5/', 'm.ctrip.com/html5'];
 
@@ -11,11 +12,12 @@ class WebView extends StatefulWidget {
   final bool hideAppBar;
   final bool backForbid;
 
-  WebView({this.url,
-    this.statusBarColor,
-    this.title,
-    this.hideAppBar,
-    this.backForbid  = false});
+  WebView(
+      {this.url,
+      this.statusBarColor,
+      this.title,
+      this.hideAppBar,
+      this.backForbid = false});
 
   @override
   _WebViewState createState() => _WebViewState();
@@ -37,25 +39,23 @@ class _WebViewState extends State<WebView> {
 
     _onStateChanged =
         _webviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
-          switch (state.type) {
-            case WebViewState.startLoad:
-              if (_isToMain(state.url) && !_exiting) {
-                if (widget.backForbid) {
-                  _webviewPlugin.launch(widget.url);
-                } else {
-                  Navigator.pop(context);
-                  _exiting = true;
-                }
-              }
-              break;
-            default:
-              break;
+      switch (state.type) {
+        case WebViewState.startLoad:
+          if (_isToMain(state.url) && !_exiting) {
+            if (widget.backForbid) {
+              _webviewPlugin.launch(widget.url);
+            } else {
+              Navigator.pop(context);
+              _exiting = true;
+            }
           }
-        });
-
-    _onHttpError = _webviewPlugin.onHttpError.listen((WebViewHttpError e) {
-
+          break;
+        default:
+          break;
+      }
     });
+
+    _onHttpError = _webviewPlugin.onHttpError.listen((WebViewHttpError e) {});
   }
 
   _isToMain(String url) {
@@ -89,28 +89,39 @@ class _WebViewState extends State<WebView> {
     } else {
       backButtonColor = Colors.white;
     }
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          _appBar( Color(int.parse('0xff' + statusBarColorStr)), backButtonColor),
-          Expanded(child: WebviewScaffold(
-            url: widget.url,
-            withZoom: true,
-            userAgent: 'null',
-            withLocalStorage: true,
-            hidden: true,
-            initialChild: Container(color: Colors.white,
-              child: Center(child: Text('Loading'),),),))
-        ],
-      ),
-    );
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        child: Scaffold(
+          body: Column(
+            children: <Widget>[
+              _appBar(Color(int.parse('0xff' + statusBarColorStr)),
+                  backButtonColor),
+              Expanded(
+                  child: WebviewScaffold(
+                url: widget.url,
+                withZoom: true,
+                userAgent: 'null',
+                withLocalStorage: true,
+                hidden: true,
+                initialChild: Container(
+                  color: Colors.white,
+                  child: Center(
+                    child: Text('Loading'),
+                  ),
+                ),
+              ))
+            ],
+          ),
+        ),
+        value: backButtonColor == Colors.white
+            ? SystemUiOverlayStyle.dark
+            : SystemUiOverlayStyle.light);
   }
 
-  Widget  _appBar(Color backgroundColor, Color backButtonColor){
-    if(widget.hideAppBar ?? false){
-     return Container(
+  Widget _appBar(Color backgroundColor, Color backButtonColor) {
+    if (widget.hideAppBar ?? false) {
+      return Container(
         color: backgroundColor,
-        height: 0,
+        height: 30,
       );
     }
 
@@ -149,5 +160,4 @@ class _WebViewState extends State<WebView> {
       ),
     );
   }
-
 }
