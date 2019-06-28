@@ -9,6 +9,8 @@ import 'package:flutter_trip/widget/local_nav.dart';
 import 'package:flutter_trip/widget/grid_nav.dart';
 import 'package:flutter_trip/widget/sales_box.dart';
 import 'package:flutter_trip/widget/sub_nav.dart';
+import 'package:flutter_trip/widget/loading_container.dart';
+import 'package:flutter_trip/widget/webview.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -25,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   SalesBoxModel _salesBoxModel;
   double _appBarAlpha = 0;
 
+  ///首次加载数据Flag
   bool _loading = true;
 
   @override
@@ -67,39 +70,49 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xfff2f2f2),
-        body: Stack(children: <Widget>[
-          MediaQuery.removePadding(
-              removeTop: true,
-              context: context,
-              child: NotificationListener(
-                  onNotification: _handleScroll,
-                  child: ListView(
-                    children: <Widget>[
-                      _banner,
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
-                        child: LocalNav(localNavList: localNavList),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                        child: GridNav(_gridNavModel),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                        child: SubNav(subNavList: subNavList,),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                        child: SalesBox(salesBoxModel: _salesBoxModel,),
-                      ),
-                      Container(
-                        height: 2000,
-                      )
-                    ],
-                  ))),
-          _appBar
-        ]));
+      backgroundColor: Color(0xfff2f2f2),
+      body: LoadingContainer(
+          loading: _loading,
+          child: Stack(children: <Widget>[
+            MediaQuery.removePadding(
+                removeTop: true,
+                context: context,
+                child: RefreshIndicator(
+                  onRefresh: _handleRefresh,
+                  child: NotificationListener(
+                      onNotification: _handleScroll, child: _listView),
+                )),
+            _appBar
+          ])),
+    );
+  }
+
+  Widget get _listView {
+    return ListView(
+      children: <Widget>[
+        _banner,
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+          child: LocalNav(localNavList: localNavList),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+          child: GridNav(_gridNavModel),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+          child: SubNav(
+            subNavList: subNavList,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+          child: SalesBox(
+            salesBoxModel: _salesBoxModel,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget get _banner {
@@ -112,14 +125,18 @@ class _HomePageState extends State<HomePage> {
               pagination: SwiperPagination(),
               itemBuilder: (context, index) {
                 var item = bannerList[index];
-                return GestureDetector(
-                  onTap: () {},
-                  child: Image.network(
-                    item.icon,
-                    fit: BoxFit.fill,
-                  ),
+                return Image.network(
+                  item.icon,
+                  fit: BoxFit.fill,
                 );
               },
+              onTap: (index) => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => WebView(
+                        url: bannerList[index].url,
+                        title: bannerList[index].title,
+                        hideAppBar: bannerList[index].hideAppBar,
+                        statusBarColor: bannerList[index].statusBarColor,
+                      ))),
             )
           : Container(
               color: Colors.white,

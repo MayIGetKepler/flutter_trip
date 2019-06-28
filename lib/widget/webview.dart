@@ -112,7 +112,7 @@ class _WebViewState extends State<WebView> {
             ],
           ),
         ),
-        value: backButtonColor == Colors.white
+        value: backButtonColor == Colors.black
             ? SystemUiOverlayStyle.dark
             : SystemUiOverlayStyle.light);
   }
