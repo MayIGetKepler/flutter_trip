@@ -4,7 +4,7 @@ import 'package:flutter_trip/navigator/tab_navigator.dart';
 
 
 void main() => runApp(MyApp());
-final SystemUiOverlayStyle _style = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+final SystemUiOverlayStyle _style = SystemUiOverlayStyle(statusBarColor: Colors.transparent,statusBarBrightness: Brightness.light);
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -8,11 +8,13 @@ import 'package:flutter_trip/model/common_model.dart';
 import 'package:flutter_trip/widget/local_nav.dart';
 import 'package:flutter_trip/widget/grid_nav.dart';
 import 'package:flutter_trip/widget/sales_box.dart';
+import 'package:flutter_trip/widget/search_bar.dart';
 import 'package:flutter_trip/widget/sub_nav.dart';
 import 'package:flutter_trip/widget/loading_container.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
+const APPBAR_DEFAULT_TEXT = '酒店 美食 网红打卡地';
 
 class HomePage extends StatefulWidget {
   @override
@@ -49,6 +51,7 @@ class _HomePageState extends State<HomePage> {
       });
     } catch (e) {
       print(e);
+      if(!mounted) return null;
       setState(() {
         _loading = false;
       });
@@ -77,12 +80,12 @@ class _HomePageState extends State<HomePage> {
             MediaQuery.removePadding(
                 removeTop: true,
                 context: context,
-                child: RefreshIndicator(
+                child: RefreshIndicator(displacement: 60,
                   onRefresh: _handleRefresh,
                   child: NotificationListener(
                       onNotification: _handleScroll, child: _listView),
                 )),
-            _appBar
+            SafeArea(child: _appBar)
           ])),
     );
   }
@@ -147,10 +150,10 @@ class _HomePageState extends State<HomePage> {
   Widget get _appBar {
     return FractionallySizedBox(
       widthFactor: 1,
-      child: Container(
-        decoration:
-            BoxDecoration(color: Colors.white.withOpacity(_appBarAlpha)),
-        height: 80.0,
+      child: SearchBar(
+        searchBarType: SearchBarType.normal,
+        inputBoxClick: (){},
+        defaultText: APPBAR_DEFAULT_TEXT,
       ),
     );
   }
