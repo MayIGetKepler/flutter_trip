@@ -5,6 +5,7 @@ import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/sales_box_model.dart';
 import 'package:flutter_trip/model/common_model.dart';
+import 'package:flutter_trip/utils/navigator_util.dart';
 import 'package:flutter_trip/widget/local_nav.dart';
 import 'package:flutter_trip/widget/grid_nav.dart';
 import 'package:flutter_trip/widget/sales_box.dart';
@@ -51,7 +52,7 @@ class _HomePageState extends State<HomePage> {
       });
     } catch (e) {
       print(e);
-      if(!mounted) return null;
+      if (!mounted) return null;
       setState(() {
         _loading = false;
       });
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _appBarAlpha = (notification.metrics.pixels / APPBAR_SCROLL_OFFSET)
             .clamp(0.0, 1.0);
+        print(_appBarAlpha);
       });
     }
     return false;
@@ -80,12 +82,13 @@ class _HomePageState extends State<HomePage> {
             MediaQuery.removePadding(
                 removeTop: true,
                 context: context,
-                child: RefreshIndicator(displacement: 60,
+                child: RefreshIndicator(
+                  displacement: 60,
                   onRefresh: _handleRefresh,
                   child: NotificationListener(
                       onNotification: _handleScroll, child: _listView),
                 )),
-            SafeArea(child: _appBar)
+             _appBar
           ])),
     );
   }
@@ -148,13 +151,37 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget get _appBar {
-    return FractionallySizedBox(
-      widthFactor: 1,
-      child: SearchBar(
-        searchBarType: SearchBarType.normal,
-        inputBoxClick: (){},
-        defaultText: APPBAR_DEFAULT_TEXT,
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [Color(0x66000000), Colors.transparent],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomRight),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 0.5)]),
+      child: Container(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 5,bottom: 10),
+        color: Color.fromARGB((_appBarAlpha * 255).toInt(), 255, 255, 255),
+        child: FractionallySizedBox(
+          widthFactor: 1,
+          child: SearchBar(
+            searchBarType: _appBarAlpha > 0.2?SearchBarType.homeLight:SearchBarType.home,
+            inputBoxClick: _jumpToSearch,
+            defaultText: APPBAR_DEFAULT_TEXT,
+          ),
+        ),
       ),
     );
   }
+
+  _jumpToSearch() {
+//    NavigatorUtil.push(
+//        context,
+//        SearchPage(
+//          hint: SEARCH_BAR_DEFAULT_TEXT,
+//        ));
+  }
+//
+//  _jumpToSpeak() {
+//    NavigatorUtil.push(context, SpeakPage());
+//  }
 }
