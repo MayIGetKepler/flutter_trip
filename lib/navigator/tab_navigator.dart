@@ -26,7 +26,7 @@ class _TabNavigatorState extends State<TabNavigator> {
     return Scaffold(
       body: PageView(
         controller: _controller,
-        children: <Widget>[HomePage(), SearchPage(), TravelPage(), MyPage()],
+        children: <Widget>[HomePage(), SearchPage(hideLeft: true,), TravelPage(), MyPage()],
         onPageChanged: (index) {
           setState(() {
             _index = index;

@@ -5,6 +5,7 @@ import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/sales_box_model.dart';
 import 'package:flutter_trip/model/common_model.dart';
+import 'package:flutter_trip/pages/search_page.dart';
 import 'package:flutter_trip/utils/navigator_util.dart';
 import 'package:flutter_trip/widget/local_nav.dart';
 import 'package:flutter_trip/widget/grid_nav.dart';
@@ -15,7 +16,7 @@ import 'package:flutter_trip/widget/loading_container.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
-const APPBAR_DEFAULT_TEXT = '酒店 美食 网红打卡地';
+const SEARCH_BAR_DEFAULT_TEXT = '酒店 美食 网红打卡地';
 
 class HomePage extends StatefulWidget {
   @override
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                   child: NotificationListener(
                       onNotification: _handleScroll, child: _listView),
                 )),
-             _appBar
+            _appBar
           ])),
     );
   }
@@ -136,14 +137,14 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.fill,
                 );
               },
-              onTap: (index) => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => WebView(
-                        url: bannerList[index].url,
-                        title: bannerList[index].title,
-                        hideAppBar: bannerList[index].hideAppBar,
-                        statusBarColor: bannerList[index].statusBarColor,
-                      ))),
-            )
+              onTap: (index) => NavigatorUtil.push(
+                  context,
+                  WebView(
+                    url: bannerList[index].url,
+                    title: bannerList[index].title,
+                    hideAppBar: bannerList[index].hideAppBar,
+                    statusBarColor: bannerList[index].statusBarColor,
+                  )))
           : Container(
               color: Colors.white,
             ),
@@ -153,20 +154,27 @@ class _HomePageState extends State<HomePage> {
   Widget get _appBar {
     return Container(
       decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Color(0x66000000), Colors.transparent],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomRight),
+          gradient: LinearGradient(colors: [
+            Color(0x55ffffff),
+            Color(0x44ffffff),
+            Color(0x33ffffff),
+            Color(0x33ffffff),
+            Color(0x22ffffff),
+            Colors.transparent
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
           boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 0.5)]),
       child: Container(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 5,bottom: 10),
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 5, bottom: 10),
         color: Color.fromARGB((_appBarAlpha * 255).toInt(), 255, 255, 255),
         child: FractionallySizedBox(
           widthFactor: 1,
           child: SearchBar(
-            searchBarType: _appBarAlpha > 0.2?SearchBarType.homeLight:SearchBarType.home,
+            searchBarType: _appBarAlpha > 0.2
+                ? SearchBarType.homeLight
+                : SearchBarType.home,
             inputBoxClick: _jumpToSearch,
-            defaultText: APPBAR_DEFAULT_TEXT,
+            defaultText: SEARCH_BAR_DEFAULT_TEXT,
           ),
         ),
       ),
@@ -174,11 +182,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   _jumpToSearch() {
-//    NavigatorUtil.push(
-//        context,
-//        SearchPage(
-//          hint: SEARCH_BAR_DEFAULT_TEXT,
-//        ));
+    NavigatorUtil.push(
+        context,
+        SearchPage(
+          hint: SEARCH_BAR_DEFAULT_TEXT,
+        ));
   }
 //
 //  _jumpToSpeak() {
