@@ -39,7 +39,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler {
         switch (methodCall.method) {
             case "start":
                 mStatefulResult = StatefulResult.of(result);
-                start(methodCall,mStatefulResult);
+                start(methodCall, mStatefulResult);
                 break;
             case "stop":
                 stop();
@@ -47,37 +47,45 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler {
             case "cancel":
                 cancel();
                 break;
+            case "release":
+                release();
             default:
                 result.notImplemented();
         }
     }
 
-    private void start(MethodCall call,StatefulResult result) {
-        if (mActivity == null){
-            Log.e(TAG, "Ignored start, current activity is null" );
-            result.error("Ignored start, current activity is null",null,null);
+    @SuppressWarnings("unchecked")
+    private void start(MethodCall call, StatefulResult result) {
+        if (mActivity == null) {
+            Log.e(TAG, "Ignored start, current activity is null");
+            result.error("Ignored start, current activity is null", null, null);
             return;
         }
-        if (getAsrManager() == null){
-            Log.e(TAG, "Ignored start, can not get AsrManager" );
-            result.error("Ignored start, can not get AsrManager",null,null);
+        if (getAsrManager() == null) {
+            Log.e(TAG, "Ignored start, can not get AsrManager");
+            result.error("Ignored start, can not get AsrManager", null, null);
             return;
         }
-        getAsrManager().start(call.arguments instanceof  Map ? (Map)call.arguments : null);
+        getAsrManager().start(call.arguments instanceof Map ? (Map) call.arguments : null);
     }
 
-    private void stop(){
-        if (getAsrManager() != null){
+    private void stop() {
+        if (getAsrManager() != null) {
             getAsrManager().stop();
         }
     }
 
-    private void cancel(){
-        if (getAsrManager() != null){
+    private void cancel() {
+        if (getAsrManager() != null) {
             getAsrManager().cancel();
         }
     }
 
+    private void release() {
+        if (getAsrManager() != null) {
+            getAsrManager().release();
+        }
+    }
 
 
     private AsrManager mAsrManager;
@@ -117,7 +125,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler {
 
         @Override
         public void onAsrFinalResult(String[] results, RecogResult recogResult) {
-            if (mStatefulResult != null){
+            if (mStatefulResult != null) {
                 mStatefulResult.success(results[0]);
             }
         }
@@ -129,8 +137,8 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler {
 
         @Override
         public void onAsrFinishError(int errorCode, int subErrorCode, String descMessage, RecogResult recogResult) {
-            if (mStatefulResult != null){
-                mStatefulResult.error(descMessage,null,null);
+            if (mStatefulResult != null) {
+                mStatefulResult.error(descMessage, null, null);
             }
         }
 
@@ -179,7 +187,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler {
 
         ArrayList<String> toApplyList = new ArrayList<>();
 
-        for (String perm :permissions){
+        for (String perm : permissions) {
             if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(mActivity, perm)) {
                 toApplyList.add(perm);
                 //进入到这里代表没有权限.
@@ -187,7 +195,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler {
             }
         }
         String[] tmpList = new String[toApplyList.size()];
-        if (!toApplyList.isEmpty()){
+        if (!toApplyList.isEmpty()) {
             ActivityCompat.requestPermissions(mActivity, toApplyList.toArray(tmpList), 123);
         }
 

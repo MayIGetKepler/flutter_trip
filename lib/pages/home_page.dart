@@ -6,6 +6,7 @@ import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/sales_box_model.dart';
 import 'package:flutter_trip/model/common_model.dart';
 import 'package:flutter_trip/pages/search_page.dart';
+import 'package:flutter_trip/pages/speak_page.dart';
 import 'package:flutter_trip/utils/navigator_util.dart';
 import 'package:flutter_trip/widget/local_nav.dart';
 import 'package:flutter_trip/widget/grid_nav.dart';
@@ -174,6 +175,7 @@ class _HomePageState extends State<HomePage> {
                 ? SearchBarType.homeLight
                 : SearchBarType.home,
             inputBoxClick: _jumpToSearch,
+            speakClick: _jumpToSpeak,
             defaultText: SEARCH_BAR_DEFAULT_TEXT,
           ),
         ),
@@ -188,8 +190,8 @@ class _HomePageState extends State<HomePage> {
           hint: SEARCH_BAR_DEFAULT_TEXT,
         ));
   }
-//
-//  _jumpToSpeak() {
-//    NavigatorUtil.push(context, SpeakPage());
-//  }
+
+  _jumpToSpeak() {
+    NavigatorUtil.push(context, SpeakPage());
+  }
 }

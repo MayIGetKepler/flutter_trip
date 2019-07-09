@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_trip/dao/search_dao.dart';
 import 'package:flutter_trip/model/search_model.dart';
+import 'package:flutter_trip/pages/speak_page.dart';
 import 'package:flutter_trip/utils/navigator_util.dart';
 import 'package:flutter_trip/widget/search_bar.dart';
 import 'package:flutter_trip/widget/webview.dart';
@@ -39,6 +40,14 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   SearchModel _searchModel;
   String keyword;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.keyword != null) {
+      onTextChanged(widget.keyword);
+    }
+  }
 
   onTextChanged(String text) async {
     keyword = text;
@@ -80,33 +89,41 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _item(SearchItem model) {
-    return _wrapTap(Container(
-      padding: EdgeInsets.symmetric(horizontal: 3),
-      decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(width: 0.3, color: Colors.grey))),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(2),
-            child: Image.asset(
-              _getImageByType(model.type),
-              height: 26,
-              width: 26,
-            ),
-          ),
-          Flexible(
-              child: Column(
+    return _wrapTap(
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 3),
+          decoration: BoxDecoration(
+              border:
+                  Border(bottom: BorderSide(width: 0.3, color: Colors.grey))),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(2),
+                child: Image.asset(
+                  _getImageByType(model.type),
+                  height: 26,
+                  width: 26,
+                ),
+              ),
+              Flexible(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _title(model),
                   _subTitle(model),
                 ],
               ))
-        ],
-      ),
-    ), (){
-      NavigatorUtil.push(context, WebView(url: model.url,title: '详情',backForbid: true,));
+            ],
+          ),
+        ), () {
+      NavigatorUtil.push(
+          context,
+          WebView(
+            url: model.url,
+            title: '详情',
+            backForbid: true,
+          ));
     });
   }
 
@@ -189,6 +206,7 @@ class _SearchPageState extends State<SearchPage> {
             onChanged: onTextChanged,
             searchBarType: SearchBarType.normal,
             defaultText: widget.keyword,
+            speakClick: _jumpToSpeak,
             leftButtonClick: () => Navigator.pop(context),
           ),
         ),
@@ -201,5 +219,8 @@ class _SearchPageState extends State<SearchPage> {
       child: child,
       onTap: onTap,
     );
+  }
+  _jumpToSpeak() {
+    NavigatorUtil.push(context, SpeakPage());
   }
 }
