@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_trip/model/travel_model.dart';
 import 'package:flutter_trip/model/travel_tab_model.dart';
 import 'package:flutter_trip/dao/travel_tab_dao.dart';
-import 'package:flutter_trip/dao/travel_dao.dart';
 import 'package:flutter_trip/pages/travel_tab_page.dart';
 
 class TravelPage extends StatefulWidget {
@@ -14,6 +12,7 @@ class _TravelPageState extends State<TravelPage>
     with SingleTickerProviderStateMixin {
   List<TravelTab> _tabs = [];
   TabController _tabController;
+  TravelTabModel _travelTabModel;
 
   @override
   void initState() {
@@ -24,6 +23,7 @@ class _TravelPageState extends State<TravelPage>
 
   _handleRefresh() {
     TravelTabDao.fetch().then((TravelTabModel model) {
+      _travelTabModel = model;
       _tabs = model.tabs;
       _tabController = TabController(length: _tabs.length, vsync: this);
       setState(() {});
@@ -57,11 +57,16 @@ class _TravelPageState extends State<TravelPage>
             indicator: UnderlineTabIndicator(
                 borderSide: BorderSide(color: Color(0xff2fcfbb), width: 3)),
           ),
-          Flexible(child: TabBarView(
-              controller: _tabController,
-              children: _tabs.map((e){
-                return TravelTabPage(code:e.groupChannelCode);
-              }).toList()))
+          Flexible(
+              child: TabBarView(
+                  controller: _tabController,
+                  children: _tabs.map((e) {
+                    return TravelTabPage(
+                      url: _travelTabModel?.url,
+                      code: e.groupChannelCode,
+                      params: _travelTabModel?.params,
+                    );
+                  }).toList()))
         ],
       )),
     );
