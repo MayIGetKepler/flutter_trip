@@ -76,27 +76,27 @@ class _SearchBarState extends State<SearchBar> {
               ),
             ),
             widget.leftButtonClick),
-        Expanded(child: _inputBox()),
-        _wrapTap(
-            Container(
-              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: Icon(
-                Icons.search,
-                color: _homeTypeFontColor(),
-                size: 26,
-              ),
-            ),
-            widget.rightButtonClick),
-        _wrapTap(
-            Container(
-              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: Icon(
-                Icons.comment,
-                color: _homeTypeFontColor(),
-                size: 26,
-              ),
-            ),
-            widget.rightButtonClick)
+        Expanded(child: Padding(padding: EdgeInsets.only(right: 30),child: _inputBox(),)),
+//        _wrapTap(
+//            Container(
+//              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+//              child: Icon(
+//                Icons.search,
+//                color: _homeTypeFontColor(),
+//                size: 26,
+//              ),
+//            ),
+//            widget.rightButtonClick),
+//        _wrapTap(
+//            Container(
+//              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+//              child: Icon(
+//                Icons.comment,
+//                color: _homeTypeFontColor(),
+//                size: 26,
+//              ),
+//            ),
+//            widget.rightButtonClick)
 
       ],
     );

@@ -3,6 +3,7 @@ import 'package:flutter_trip/pages/home_page.dart';
 import 'package:flutter_trip/pages/my_page.dart';
 import 'package:flutter_trip/pages/search_page.dart';
 import 'package:flutter_trip/pages/travel_page.dart';
+import 'package:flutter_trip/plugin/to_background_manager.dart';
 
 class TabNavigator extends StatefulWidget {
   @override
@@ -21,6 +22,15 @@ class _TabNavigatorState extends State<TabNavigator> {
     _controller = PageController();
   }
 
+  Future<bool> _onWillPop() async{
+    ToBackgroundManager.toBackground();
+    return false;
+  }
+
+  Widget _wrapWillPop(Widget child){
+    return WillPopScope(child: child, onWillPop: _onWillPop);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,12 +38,12 @@ class _TabNavigatorState extends State<TabNavigator> {
         physics: NeverScrollableScrollPhysics(),
         controller: _controller,
         children: <Widget>[
-          HomePage(),
-          SearchPage(
+          _wrapWillPop(HomePage()),
+    _wrapWillPop(SearchPage(
             hideLeft: true,
-          ),
-          TravelPage(),
-          MyPage()
+          )),
+    _wrapWillPop(TravelPage()),
+    MyPage()
         ],
         onPageChanged: (index) {
           setState(() {

@@ -22,6 +22,7 @@ class TravelTabPage extends StatefulWidget {
 class _TravelTabPageState extends State<TravelTabPage>
     with AutomaticKeepAliveClientMixin {
   bool _isLoading = true;
+  bool _isLoadingMore = false;
   int _pageIndex = 1;
   List<TravelItem> _items = [];
 
@@ -43,12 +44,8 @@ class _TravelTabPageState extends State<TravelTabPage>
       });
     });
 
-    if (model != null &&
-        model.resultList != null &&
-        model.resultList.isNotEmpty) {
-      print('length ====== ${model.resultList.length}');
-      model.resultList.removeWhere((e) => e == null);
-      _items.insertAll(0, model.resultList);
+    if (model != null) {
+      _items.insertAll(0, _modelFilter(model.resultList));
       setState(() {
         _isLoading = false;
       });
@@ -57,18 +54,78 @@ class _TravelTabPageState extends State<TravelTabPage>
     return null;
   }
 
+  _loadMore() async {
+    if (_isLoadingMore) return;
+    _isLoadingMore = true;
+    TravelDao.fetch(
+            widget.url, widget.params, widget.code, _pageIndex + 1, PAGE_SIZE)
+        .then((model) {
+      if (model != null) {
+        _items.addAll(_modelFilter(model.resultList));
+        _pageIndex++;
+        _isLoadingMore = false;
+        setState(() {});
+      }
+    }).catchError((e) {
+      _isLoadingMore = false;
+      setState(() {});
+      print(e.toString());
+    });
+  }
+
+  List<TravelItem> _modelFilter(List<TravelItem> models) {
+    if (models != null && models.isNotEmpty) {
+      models.removeWhere((e) => e == null);
+      return models;
+    } else {
+      return [];
+    }
+  }
+
+  bool _handleScroll(Notification notification) {
+    if (notification is ScrollUpdateNotification && notification.depth == 0) {
+      if (notification.metrics.pixels >=
+          notification.metrics.maxScrollExtent - 30) {
+        _loadMore();
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LoadingContainer(
         child: RefreshIndicator(
-            child: StaggeredGridView.countBuilder(
-                crossAxisCount: 2,
-                mainAxisSpacing: 4.0,
-                crossAxisSpacing: 4.0,
-                itemCount: _items.length,
-                itemBuilder: (context, index) =>
-                    _TravelItem(model: _items[index]),
-                staggeredTileBuilder: (index) => StaggeredTile.fit(1)),
+            child: NotificationListener(
+              child: StaggeredGridView.countBuilder(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 4.0,
+                  crossAxisSpacing: 4.0,
+                  itemCount:
+                      _items.isNotEmpty ? _items.length + 1 : _items.length,
+                  itemBuilder: (context, index) => index == _items.length
+                      ? Container(
+                          height: 30,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              CircularProgressIndicator(
+                                strokeWidth: 1,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5),
+                                child: Text('加载中'),
+                              )
+                            ],
+                          ),
+                        )
+                      : _TravelItem(model: _items[index]),
+                  staggeredTileBuilder: (index) => StaggeredTile.fit(
+                      (_items.isNotEmpty && index == _items.length) ? 2 : 1)),
+              onNotification: _handleScroll,
+            ),
             onRefresh: _handleRefresh),
         loading: _isLoading);
   }

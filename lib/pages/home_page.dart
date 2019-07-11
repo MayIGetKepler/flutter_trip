@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _appBarAlpha = (notification.metrics.pixels / APPBAR_SCROLL_OFFSET)
             .clamp(0.0, 1.0);
-        print(_appBarAlpha);
+//        print(_appBarAlpha);
       });
     }
     return false;

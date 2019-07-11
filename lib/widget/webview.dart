@@ -29,13 +29,16 @@ class _WebViewState extends State<WebView> {
   StreamSubscription<WebViewStateChanged> _onStateChanged;
   StreamSubscription<WebViewHttpError> _onHttpError;
   bool _exiting = false;
-
+  String _currentUrl = '';
   @override
   void initState() {
     super.initState();
+    _currentUrl = widget.url;
     _webviewPlugin = FlutterWebviewPlugin();
     _webviewPlugin.close();
-    _onUrlChanged = _webviewPlugin.onUrlChanged.listen((String url) {});
+    _onUrlChanged = _webviewPlugin.onUrlChanged.listen((String url) {
+      _currentUrl = url;
+    });
 
     _onStateChanged =
         _webviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
@@ -43,6 +46,7 @@ class _WebViewState extends State<WebView> {
         case WebViewState.startLoad:
           if (_isToMain(state.url) && !_exiting) {
             if (widget.backForbid) {
+              _webviewPlugin.stopLoading();
               _webviewPlugin.launch(widget.url);
             } else {
               Navigator.pop(context);
@@ -80,6 +84,15 @@ class _WebViewState extends State<WebView> {
     super.dispose();
   }
 
+  Future<bool> _onWillPop() async{
+    if(_currentUrl != widget.url){
+      _webviewPlugin.goBack();
+      return false;
+    }else{
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String statusBarColorStr = widget.statusBarColor ?? 'ffffff';
@@ -90,28 +103,28 @@ class _WebViewState extends State<WebView> {
       backButtonColor = Colors.white;
     }
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        child: Scaffold(
+        child: WillPopScope(child: Scaffold(
           body: Column(
             children: <Widget>[
               _appBar(Color(int.parse('0xff' + statusBarColorStr)),
                   backButtonColor),
               Expanded(
                   child: WebviewScaffold(
-                url: widget.url,
-                withZoom: true,
-                userAgent: 'null',
-                withLocalStorage: true,
-                hidden: true,
-                initialChild: Container(
-                  color: Colors.white,
-                  child: Center(
-                    child: Text('Loading'),
-                  ),
-                ),
-              ))
+                    url: widget.url,
+                    withZoom: true,
+                    userAgent: 'null',
+                    withLocalStorage: true,
+                    hidden: true,
+                    initialChild: Container(
+                      color: Colors.white,
+                      child: Center(
+                        child: Text('Loading'),
+                      ),
+                    ),
+                  ))
             ],
           ),
-        ),
+        ), onWillPop: _onWillPop),
         value: backButtonColor == Colors.black
             ? SystemUiOverlayStyle.dark
             : SystemUiOverlayStyle.light);
