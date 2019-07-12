@@ -160,7 +160,7 @@ class _SearchPageState extends State<SearchPage> {
     const TextStyle keywordStyle =
         TextStyle(fontSize: 16, color: Colors.orange);
     for (int i = 0; i < arr.length; i++) {
-      if ((i + 1) % 2 == 0) {
+      if (i>0) {
         spans.add(TextSpan(text: keyword, style: keywordStyle));
       }
       final span = arr[i];

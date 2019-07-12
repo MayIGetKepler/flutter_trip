@@ -30,6 +30,7 @@ class _WebViewState extends State<WebView> {
   StreamSubscription<WebViewHttpError> _onHttpError;
   bool _exiting = false;
   String _currentUrl = '';
+
   @override
   void initState() {
     super.initState();
@@ -84,11 +85,11 @@ class _WebViewState extends State<WebView> {
     super.dispose();
   }
 
-  Future<bool> _onWillPop() async{
-    if(_currentUrl != widget.url){
+  Future<bool> _onWillPop() async {
+    if (_currentUrl != widget.url) {
       _webviewPlugin.goBack();
       return false;
-    }else{
+    } else {
       return true;
     }
   }
@@ -103,13 +104,14 @@ class _WebViewState extends State<WebView> {
       backButtonColor = Colors.white;
     }
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        child: WillPopScope(child: Scaffold(
-          body: Column(
-            children: <Widget>[
-              _appBar(Color(int.parse('0xff' + statusBarColorStr)),
-                  backButtonColor),
-              Expanded(
-                  child: WebviewScaffold(
+        child: WillPopScope(
+            child: Scaffold(
+              body: Column(
+                children: <Widget>[
+                  _appBar(Color(int.parse('0xff' + statusBarColorStr)),
+                      backButtonColor),
+                  Expanded(
+                      child: WebviewScaffold(
                     url: widget.url,
                     withZoom: true,
                     userAgent: 'null',
@@ -122,9 +124,10 @@ class _WebViewState extends State<WebView> {
                       ),
                     ),
                   ))
-            ],
-          ),
-        ), onWillPop: _onWillPop),
+                ],
+              ),
+            ),
+            onWillPop: _onWillPop),
         value: backButtonColor == Colors.black
             ? SystemUiOverlayStyle.dark
             : SystemUiOverlayStyle.light);

@@ -22,12 +22,12 @@ class _TabNavigatorState extends State<TabNavigator> {
     _controller = PageController();
   }
 
-  Future<bool> _onWillPop() async{
+  Future<bool> _onWillPop() async {
     ToBackgroundManager.toBackground();
     return false;
   }
 
-  Widget _wrapWillPop(Widget child){
+  Widget _wrapWillPop(Widget child) {
     return WillPopScope(child: child, onWillPop: _onWillPop);
   }
 
@@ -39,11 +39,11 @@ class _TabNavigatorState extends State<TabNavigator> {
         controller: _controller,
         children: <Widget>[
           _wrapWillPop(HomePage()),
-    _wrapWillPop(SearchPage(
+          _wrapWillPop(SearchPage(
             hideLeft: true,
           )),
-    _wrapWillPop(TravelPage()),
-    MyPage()
+          _wrapWillPop(TravelPage()),
+          MyPage()
         ],
         onPageChanged: (index) {
           setState(() {

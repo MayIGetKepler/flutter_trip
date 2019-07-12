@@ -28,6 +28,10 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!--全面屏适配：声明最大高宽比-->
+            <meta-data
+                android:name="android.max_aspect"
+                android:value="2.3"/>
         </activity>
     </application>
 </manifest>

@@ -76,7 +76,11 @@ class _SearchBarState extends State<SearchBar> {
               ),
             ),
             widget.leftButtonClick),
-        Expanded(child: Padding(padding: EdgeInsets.only(right: 30),child: _inputBox(),)),
+        Expanded(
+            child: Padding(
+          padding: EdgeInsets.only(right: 30),
+          child: _inputBox(),
+        )),
 //        _wrapTap(
 //            Container(
 //              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -97,7 +101,6 @@ class _SearchBarState extends State<SearchBar> {
 //              ),
 //            ),
 //            widget.rightButtonClick)
-
       ],
     );
   }
@@ -120,7 +123,7 @@ class _SearchBarState extends State<SearchBar> {
         Expanded(child: _inputBox()),
         _wrapTap(
             Container(
-              padding: EdgeInsets.only(left: 3,right: 3),
+              padding: EdgeInsets.only(left: 3, right: 3),
               child: Text('搜索',
                   style: TextStyle(color: Colors.blue, fontSize: 17)),
             ),
